@@ -199,6 +199,26 @@ class HealthConnectManager(private val applicationContext: ReactApplicationConte
     }
   }
 
+  fun getChanges(recordType: String, token: String, promise: Promise): String {
+    throwUnlessClientIsAvailable(promise) {
+      coroutineScope.launch {
+        try {
+          if (token == "") {
+            val record = ReactHealthRecord.getRecordByType(recordType)
+            token = healthConnectClient.getChangesToken(
+              ChangesTokenRequest(recordTypes = setOf(record))
+            )
+          }
+
+          val response = healthConnectClient.getChanges(token)
+          promise.resolve(ReactHealthRecord.parseChanges(recordType, response))
+        } catch (e: Exception) {
+          promise.rejectWithException(e)
+        }
+      }
+    }
+  }
+
   companion object {
     const val REQUEST_CODE = 4235
   }

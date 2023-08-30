@@ -85,5 +85,38 @@ class ReactHealthRecord {
       val recordClass = createReactHealthRecordInstance<Record>(recordType)
       return recordClass.parseRecord(response.record)
     }
+
+    fun parseChanges(
+      recordType: String,
+      response: ChangesResponse
+    ): WritableNativeMap {
+      val recordClass = createReactHealthRecordInstance<Record>(recordType)
+
+      val upserts = mutableListOf();
+      val deletes = mutableListOf();
+      response.changes.forEach { change ->
+        when (change) {
+          is UpsertionChange ->
+            if (change.record.metadata.dataOrigin.packageName != context.packageName) {
+              upserts.add(recordClass.parseRecord(change.record))
+            }
+          is DeletionChange -> deletes.add(change.recordId)
+        }
+      }
+
+      return WritableNativeMap().apply {
+        putArray("upserts", WritableNativeArray().apply {
+          for (upsert in upserts) {
+            pushMap(upsert)
+          }
+        })
+        putArray("deletes", WritableNativeArray().apply {
+          for (delete in deletes) {
+            pushMap(delete)
+          }
+        })
+        putString("nextToken", response.nextChangesToken)
+      }
+    }
   }
 }
