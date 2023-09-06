@@ -30,6 +30,10 @@ export declare function insertRecords(records: HealthConnectRecord[]): Promise<s
 export declare function aggregateRecord<T extends AggregateResultRecordType>(request: AggregateRequest<T>): Promise<AggregateResult<T>>;
 export declare function deleteRecordsByUuids(recordType: RecordType, recordIdsList: string[], clientRecordIdsList: string[]): Promise<void>;
 export declare function deleteRecordsByTimeRange(recordType: RecordType, timeRangeFilter: TimeRangeFilter): Promise<void>;
-export declare function getChanges(recordType: RecordType, token?: string): Promise<void>;
+export declare function getChanges<T extends RecordType>(recordType: T, token?: string): Promise<{
+    upserts: RecordResult<T>[];
+    deletes: string[];
+    nextToken: string;
+}>;
 export * from './constants';
 //# sourceMappingURL=index.d.ts.map

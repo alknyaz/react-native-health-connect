@@ -157,10 +157,14 @@ export function deleteRecordsByTimeRange(
   return HealthConnect.deleteRecordsByTimeRange(recordType, timeRangeFilter);
 }
 
-export function getChanges(
-  recordType: RecordType,
+export function getChanges<T extends RecordType>(
+  recordType: T,
   token?: string
-): Promise<void> {
+): Promise<{
+  upserts: RecordResult<T>[];
+  deletes: string[];
+  nextToken: string;
+}> {
   return HealthConnect.getChanges(recordType, token ?? '');
 }
 
