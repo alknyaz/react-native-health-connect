@@ -85,7 +85,7 @@ class HealthConnectModule internal constructor(context: ReactApplicationContext)
   }
 
   @ReactMethod
-  override fun getChanges(
+  fun getChanges(
     recordType: String,
     token: String,
     promise: Promise
