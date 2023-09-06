@@ -114,7 +114,7 @@ class ReactHealthRecord {
         })
         putArray("deletes", WritableNativeArray().apply {
           for (deletedId in deletes) {
-            pushMap(deletedId)
+            pushMap(deletedId as ReadableMap)
           }
         })
         putString("nextToken", response.nextChangesToken)
