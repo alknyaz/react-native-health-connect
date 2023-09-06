@@ -1,9 +1,12 @@
 package dev.matinzd.healthconnect.records
 
 import androidx.health.connect.client.aggregate.AggregationResult
+import androidx.health.connect.client.changes.DeletionChange
+import androidx.health.connect.client.changes.UpsertionChange
 import androidx.health.connect.client.records.Record
 import androidx.health.connect.client.request.AggregateRequest
 import androidx.health.connect.client.request.ReadRecordsRequest
+import androidx.health.connect.client.response.ChangesResponse
 import androidx.health.connect.client.response.InsertRecordsResponse
 import androidx.health.connect.client.response.ReadRecordResponse
 import androidx.health.connect.client.response.ReadRecordsResponse
@@ -15,6 +18,7 @@ import dev.matinzd.healthconnect.utils.InvalidRecordType
 import dev.matinzd.healthconnect.utils.convertReactRequestOptionsFromJS
 import dev.matinzd.healthconnect.utils.reactRecordTypeToClassMap
 import dev.matinzd.healthconnect.utils.reactRecordTypeToReactClassMap
+import java.util.UUID
 import kotlin.reflect.KClass
 
 class ReactHealthRecord {
@@ -92,14 +96,12 @@ class ReactHealthRecord {
     ): WritableNativeMap {
       val recordClass = createReactHealthRecordInstance<Record>(recordType)
 
-      val upserts = mutableListOf();
-      val deletes = mutableListOf();
+      val upserts = mutableListOf<WritableNativeMap>();
+      val deletes = mutableListOf<String>();
       response.changes.forEach { change ->
         when (change) {
           is UpsertionChange ->
-            if (change.record.metadata.dataOrigin.packageName != context.packageName) {
               upserts.add(recordClass.parseRecord(change.record))
-            }
           is DeletionChange -> deletes.add(change.recordId)
         }
       }
@@ -111,8 +113,8 @@ class ReactHealthRecord {
           }
         })
         putArray("deletes", WritableNativeArray().apply {
-          for (delete in deletes) {
-            pushMap(delete)
+          for (deletedId in deletes) {
+            pushMap(deletedId)
           }
         })
         putString("nextToken", response.nextChangesToken)
