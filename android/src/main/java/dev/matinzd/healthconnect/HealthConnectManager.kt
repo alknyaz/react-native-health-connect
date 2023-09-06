@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.health.connect.client.HealthConnectClient
+import androidx.health.connect.client.request.ChangesTokenRequest
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
